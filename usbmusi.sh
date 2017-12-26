@@ -71,16 +71,25 @@ function play() {
 function read_input() {
     while [ 1 ]; do
         read -n1 CHARACTER
+        # echo $CHARACTER
         if [ -z $CHARACTER ]; then
             echo "Please input directory"
             continue
-        elif [ $CHARACTER == "+" ]; then
+        elif [ $CHARACTER == "*" ]; then
             echo "skipping forward"
             echo "pausing_keep_force pt_step 1" > $TMP
             continue
-        elif [ $CHARACTER == "-" ]; then
+        elif [ $CHARACTER == "/" ]; then
             echo "skipping backwards"
             echo "pausing_keep_force pt_step -1" > $TMP
+            continue
+        elif [ $CHARACTER == "-" ]; then
+            echo "decreasing volume"
+            echo "volume -1" > $TMP
+            continue
+        elif [ $CHARACTER == "+" ]; then
+            echo "increasing volume"
+            echo "volume 1" > $TMP
             continue
         fi 
 
@@ -93,6 +102,9 @@ function read_input() {
     done
 }
 
+# disable the glob for asterisk '*'
+# https://stackoverflow.com/questions/11456403/stop-shell-wildcard-character-expansion
+set -f
 # trap ctrl-c and call ctrl_c()
 # https://rimuhosting.com/knowledgebase/linux/misc/trapping-ctrl-c-in-bash
 trap ctrl_c INT
