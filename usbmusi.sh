@@ -36,7 +36,7 @@ function process_input() {
     #     return
     # fi
     if [ "$1" == "999" ]; then
-        shutdown
+        myshutdown
     fi
     cd $DIR/$1 &> /dev/null
     case $? in
