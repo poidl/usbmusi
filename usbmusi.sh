@@ -2,6 +2,7 @@
 
 DIR=/mnt
 TMP=/tmp/mplayer-control
+SEEKLOCK=/tmp/mplayer-control-SEEKLOCK
 
 function errexit() {
     echo "*MYERROR* "$1 1>&2
@@ -13,8 +14,18 @@ function ctrl_c() {
         killall mplayer &> /dev/null
         echo "Cleaning up ..."
         rm $TMP 2>/dev/null
+        rm $SEEKLOCK 2>/dev/null
         echo "Exiting ... "
         exit 0
+}
+
+function myshutdown() {
+        # TODO: only kill the ones started in this script
+        killall mplayer &> /dev/null
+        echo "Cleaning up ..."
+        rm $TMP 2>/dev/null
+        echo "Shutting down ... "
+        shutdown -h now
 }
 
 function process_input() {
@@ -25,8 +36,7 @@ function process_input() {
     #     return
     # fi
     if [ "$1" == "999" ]; then
-        ctrl_c
-        # shutdown -h now
+        shutdown
     fi
     cd $DIR/$1 &> /dev/null
     case $? in
@@ -80,8 +90,16 @@ function read_input() {
             echo "pausing_keep_force pt_step 1" > $TMP
             continue
         elif [ $CHARACTER == "/" ]; then
-            echo "skipping backwards"
-            echo "pausing_keep_force pt_step -1" > $TMP
+            # if seek is locked, skip one track backwards
+            if [ -e "$SEEKLOCK" ]; then
+                echo "skipping backwards"
+                echo "pausing_keep_force pt_step -1" > $TMP
+            else 
+                echo "seek to start of track"
+                echo "seek 0 2" > $TMP
+                # apply lock for 2 sec
+                (touch $SEEKLOCK; sleep 2; rm $SEEKLOCK) &
+            fi
             continue
         elif [ $CHARACTER == "-" ]; then
             echo "decreasing volume"

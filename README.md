@@ -52,13 +52,14 @@ Take a look at the `install.sh` script.
 
 ### Usage
 
-Choose an album from the paper list and read off the number. To start playback, type the number into the keypad and press enter. 
+Choose an album from the paper list and read off the number. To start playback, type the number into the keypad and press `Enter`. Note that the number `999` is reserved for shutting down:
 
 * `*` skips forward one track
-* `\` skips backward one track
+* `\` skips to the beginning of track or backward one track
 * `+` increases volume
 * `-` decreases volume
-* `999[Enter]` exits the program
+* `CTRL-C` exits the program
+* `999[Enter]` shuts down the computer
 
 ### Helpful links
 
