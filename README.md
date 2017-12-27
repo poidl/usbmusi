@@ -40,7 +40,7 @@ You may like this if you:
 
 ### Installation
 
-This assumes you run a system with *systemd* and *pulseaudio* installed, and have a user named `alarm`. The `install.sh` script activates autologin for user `alarm` and appends a line to `alarm`'s `.bashrc`, starting the program `usbmusi.sh` after automatic login. Commands are read from a numeric keypad.
+This assumes you run a system with *systemd*, *pulseaudio* and *mplayer* installed, and have a user named `alarm`. The `install.sh` script activates autologin for user `alarm` and appends a line to `alarm`'s `.bashrc`, starting the program `usbmusi.sh` after automatic login. Commands are read from a numeric keypad.
 
 ##### Auto-mounting the USB drive
 
