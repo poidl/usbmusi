@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR=/home/stefan/Music
+DIR=/mnt
 TMP=/tmp/mplayer-control
 
 function errexit() {
