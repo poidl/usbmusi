@@ -1,6 +1,7 @@
 #!/bin/bash
 
 DIR=/mnt
+DIR=~/Music
 TMP=/tmp/mplayer-control
 SEEKLOCK=/tmp/mplayer-control-SEEKLOCK
 
@@ -30,6 +31,7 @@ function myshutdown() {
 }
 
 function process_input() {
+    # echo $1
     if [ "$1" == "999" ]; then
         myshutdown
     fi
@@ -75,43 +77,60 @@ function play() {
 
 function read_input() {
     while [ 1 ]; do
-        read -n1 CHARACTER
-        # echo $CHARACTER
-        if [ -z $CHARACTER ]; then
-            echo "Please input directory"
-            continue
-        elif [ $CHARACTER == "*" ]; then
-            echo "skipping forward"
-            echo "pausing_keep_force pt_step 1" > $TMP
-            continue
-        elif [ $CHARACTER == "/" ]; then
-            # if seek is locked, skip one track backwards
-            if [ -e "$SEEKLOCK" ]; then
-                echo "skipping backwards"
-                echo "pausing_keep_force pt_step -1" > $TMP
-            else 
-                echo "seek to start of track"
-                echo "seek 0 2" > $TMP
-                # apply lock for 2 sec
-                (touch $SEEKLOCK; sleep 2; rm $SEEKLOCK) &
-            fi
-            continue
-        elif [ $CHARACTER == "-" ]; then
-            echo "decreasing volume"
-            echo "volume -1" > $TMP
-            continue
-        elif [ $CHARACTER == "+" ]; then
-            echo "increasing volume"
-            echo "volume 1" > $TMP
-            continue
-        fi 
-
-        # http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x405.html
-        tput el1
-        tput cub1
-        # https://stackoverflow.com/questions/12223487/append-to-variable-with-read-command
-        read -e -i$CHARACTER NUMBER
-        process_input $NUMBER
+        MYNUM=""
+        while [ 1 ]; do
+            read -n1 CHARACTER
+            if [ -z $CHARACTER ]; then
+                if [[ "$MYNUM" =~ ^[0-9]+$ ]]; then
+                    echo "Processing directory"
+                    process_input $MYNUM
+                    MYNUM=""    
+                fi
+            elif [ $CHARACTER == "*" ]; then
+                echo "skipping forward"
+                echo "pausing_keep_force pt_step 1" > $TMP
+                break
+            elif [ $CHARACTER == "/" ]; then
+                # if seek is locked, skip one track backwards
+                if [ -e "$SEEKLOCK" ]; then
+                    echo "skipping backwards"
+                    echo "pausing_keep_force pt_step -1" > $TMP
+                else 
+                    echo "seek to start of track"
+                    echo "seek 0 2" > $TMP
+                    # apply lock for 2 sec
+                    (touch $SEEKLOCK; sleep 2; rm $SEEKLOCK) &
+                fi
+                break
+            elif [ $CHARACTER == "-" ]; then
+                echo "decreasing volume"
+                echo "volume -1" > $TMP
+                break
+            elif [ $CHARACTER == "+" ]; then
+                echo "increasing volume"
+                echo "volume 1" > $TMP
+                break
+            elif [ $CHARACTER == "." ]; then
+                echo "pausing"
+                echo "pause" > $TMP
+                break
+            elif [[ $CHARACTER = [0-9] ]]; then
+                MYNUM=$MYNUM$CHARACTER
+            elif [ $CHARACTER = $'\177' ]; then
+                # clear backspace and previous number
+                tput cub 3
+                tput ech 3
+                if [ ${#MYNUM} -gt 0 ]; then
+                    MYNUM="${MYNUM:0:-1}"
+                fi
+            else
+                # http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x405.html
+                tput el1
+                tput cub1
+                echo "Please input directory number"
+                break
+            fi 
+        done
     done
 }
 
