@@ -1,7 +1,6 @@
 #!/bin/bash
 
 DIR=/mnt
-DIR=~/Music
 TMP=/tmp/mplayer-control
 SEEKLOCK=/tmp/mplayer-control-SEEKLOCK
 
