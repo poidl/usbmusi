@@ -9,32 +9,27 @@ function errexit() {
     exit 1
 }
 
+function killclean() {
+    # TODO: only kill the ones started in this script
+    killall mplayer &> /dev/null
+    echo "Cleaning up ..."
+    rm $TMP 2>/dev/null
+    rm $SEEKLOCK 2>/dev/null
+}
+
 function ctrl_c() {
-        # TODO: only kill the ones started in this script
-        killall mplayer &> /dev/null
-        echo "Cleaning up ..."
-        rm $TMP 2>/dev/null
-        rm $SEEKLOCK 2>/dev/null
-        echo "Exiting ... "
-        exit 0
+    killclean
+    echo "Exiting ... "
+    exit 0
 }
 
 function myshutdown() {
-        # TODO: only kill the ones started in this script
-        killall mplayer &> /dev/null
-        echo "Cleaning up ..."
-        rm $TMP 2>/dev/null
-        echo "Shutting down ... "
-        shutdown -h now
+    killclean
+    echo "Shutting down ... "
+    shutdown -h now
 }
 
 function process_input() {
-    # echo "$1"
-    # if [ $1 == '*' ]; then
-    #     echo "Skipping forward"
-    #     echo "pausing_keep_force pt_step 1" > $TMP
-    #     return
-    # fi
     if [ "$1" == "999" ]; then
         myshutdown
     fi
